@@ -5,34 +5,37 @@ import {
   clearSearch,
   getAllBooks,
   ReadingListBook,
-  searchBooks
+  searchBooks,
 } from '@tmo/books/data-access';
-import { FormBuilder } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { Book } from '@tmo/shared/models';
-import { map } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
 @Component({
   selector: 'tmo-book-search',
   templateUrl: './book-search.component.html',
-  styleUrls: ['./book-search.component.scss']
+  styleUrls: ['./book-search.component.scss'],
 })
 export class BookSearchComponent {
   books: Observable<ReadingListBook[]>;
 
-  searchForm = this.fb.group({
-    term: ''
+  searchForm = new FormGroup({
+    term: new FormControl(''),
   });
 
-  constructor(
-    private readonly store: Store,
-    private readonly fb: FormBuilder
-  ) {
-    this.books = this.store.select(getAllBooks)
+  constructor(private readonly store: Store) {
+    this.books = this.store.select(getAllBooks);
+    this.searchForm
+      .get('term')
+      .valueChanges.pipe(debounceTime(500), distinctUntilChanged())
+      .subscribe((termChanged) => {
+        this.searchBooks(termChanged)
+      });
   }
 
   get searchTerm(): string {
-    return this.searchForm.value.term;
+    return this.searchForm.get('term').value;
   }
 
   addBookToReadingList(book: Book) {
@@ -40,14 +43,13 @@ export class BookSearchComponent {
   }
 
   searchExample() {
-    this.searchForm.controls.term.setValue('javascript');
-    this.searchBooks();
+    this.searchForm.get('term').setValue('javascript');
+    this.searchBooks('javascript');
   }
 
-  searchBooks() {
-    if (this.searchForm.value.term) {
-      this.store.dispatch(searchBooks({ term: this.searchTerm }));
-      
+  searchBooks(termChanged) {
+    if (this.searchForm.get('term').value !== '') {
+      this.store.dispatch(searchBooks({ term: termChanged }));
     } else {
       this.store.dispatch(clearSearch());
     }
