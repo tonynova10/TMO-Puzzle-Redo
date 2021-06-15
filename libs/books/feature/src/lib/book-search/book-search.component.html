@@ -15,7 +15,7 @@
 
 <ng-container *ngIf="searchTerm; else empty">
   <div class="book-grid">
-    <div class="book" data-testing="book-item" *ngFor="let b of books">
+    <div class="book" data-testing="book-item" *ngFor="let b of books | async">
       <div class="book--title">
         {{ b.title }}
       </div>
@@ -27,17 +27,23 @@
           <div><strong>Author:</strong> {{ b.authors.join(',') }}</div>
           <div><strong>Publisher:</strong> {{ b.publisher }}</div>
           <div>
-            <strong>Published:</strong> {{ formatDate(b.publishedDate) }}
+            <strong>Published:</strong> {{ b.publishedDate | date: 'medium' }}
           </div>
           <p [innerHTML]="b.description"></p>
           <div>
-            <button
+            <button *ngIf="!b.isAdded"
               mat-flat-button
               color="primary"
               (click)="addBookToReadingList(b)"
-              [disabled]="b.isAdded"
             >
               Want to Read
+            </button>
+            <button *ngIf="b.isAdded"
+              mat-flat-button
+              color="primary"
+              [disabled]="b.isAdded"
+            >
+              On reading list
             </button>
           </div>
         </div>
