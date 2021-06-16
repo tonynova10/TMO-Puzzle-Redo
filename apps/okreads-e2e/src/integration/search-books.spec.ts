@@ -17,3 +17,19 @@ describe('When: Use the search feature', () => {
     cy.get('[data-testing="book-item"]').should('have.length.greaterThan', 1);
   });
 });
+
+describe('When I add a book and want to undo', () => {
+  beforeEach(() => {
+    cy.startAt('/');
+  });
+
+  it('Then: I should be able to see book added', () => {
+    cy.get('input[type="search"]').type('javascript');
+
+    cy.get('[data-testing="book-button"]').click();
+
+    cy.get('[data-testing="toggle-reading-list"]').click();
+
+    cy.get('[data-testing="reading-list-container"]').should('contain.text');
+  });
+})
