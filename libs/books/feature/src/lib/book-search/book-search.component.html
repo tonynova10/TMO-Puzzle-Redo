@@ -1,4 +1,4 @@
-<form [formGroup]="searchForm" (submit)="searchBooks()">
+<form [formGroup]="searchForm">
   <mat-form-field floatLabel="never">
     <input
       autoFocus
@@ -31,19 +31,14 @@
           </div>
           <p [innerHTML]="b.description"></p>
           <div>
-            <button *ngIf="!b.isAdded"
+            <button
               mat-flat-button
               color="primary"
               (click)="addBookToReadingList(b)"
-            >
-              Want to Read
-            </button>
-            <button *ngIf="b.isAdded"
-              mat-flat-button
-              color="primary"
               [disabled]="b.isAdded"
+              data-testing="book-button"
             >
-              On reading list
+              {{  b.isAdded ? 'On reading list' : 'Want to Read'  }}
             </button>
           </div>
         </div>
