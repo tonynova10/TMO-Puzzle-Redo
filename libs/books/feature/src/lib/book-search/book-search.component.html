@@ -1,4 +1,4 @@
-<form [formGroup]="searchForm" (submit)="searchBooks()">
+<form [formGroup]="searchForm">
   <mat-form-field floatLabel="never">
     <input
       autoFocus
@@ -35,6 +35,7 @@
               mat-flat-button
               color="primary"
               (click)="addBookToReadingList(b)"
+              data-testing="book-button"
             >
               Want to Read
             </button>
@@ -43,7 +44,7 @@
               color="primary"
               [disabled]="b.isAdded"
             >
-              On reading list
+              {{ b.finished ? 'Book finished' : 'On reading list' }}
             </button>
           </div>
         </div>
